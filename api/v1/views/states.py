@@ -8,17 +8,18 @@ from models import storage, state
 
 
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
-def get_all_states():
-    """Gets state information for all states"""
+def getallstate():
+    """Gets the state information for all states"""
     res = []
     for i in storage.all("State").values():
         res.append(i.to_dict())
+
     return jsonify(res)
 
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
-def get_state(state_id=None):
-    """Gets state information for specified state"""
+def getstate(state_id=None):
+    """Gets the state information, for a specified state"""
     s = storage.get("State", state_id)
     if s is None:
         abort(404)
@@ -28,20 +29,20 @@ def get_state(state_id=None):
 
 @app_views.route('/states/<state_id>', methods=['DELETE'],
                  strict_slashes=False)
-def delete_state(state_id=None):
-    """Deletes a state based on its id"""
+def deletestate(state_id=None):
+    """Deletes a state using it's id"""
     s = storage.get("State", state_id)
     if s is None:
         abort(404)
     else:
-        storage.delete()
+        storage.delete(obj)
         storage.save()
         return jsonify({}), 200
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
-def create_state():
-    """creates a new state"""
+def createstate():
+    """Creates a state and saves it in storage"""
     s = request.get_json(silent=True)
     if s is None:
         abort(400, "Not a JSON")
@@ -56,7 +57,7 @@ def create_state():
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
 def updatestate(state_id=None):
-    """updates a state"""
+    """Updates a state and save changes in storage"""
     obj = storage.get("State", state_id)
     if obj is None:
         abort(404)
@@ -72,4 +73,4 @@ def updatestate(state_id=None):
                 setattr(obj, k, v)
         storage.save()
         res = obj.to_dict()
-        return jsonify(res), 200
+        return jsonify(res), 2003

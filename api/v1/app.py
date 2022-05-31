@@ -15,10 +15,12 @@ def teardown_db(exception):
     """ method to handle teardown of database"""
     storage.close()
 
+
 @app.errorhandler(404)
 def page_not_found(error):
     """Returns JSON error repsponse"""
     return make_response(jsonify({'error': 'Not found'}), 404)
+
 
 if __name__ == '__main__':
     api_host = getenv('HBNB_API_HOST', default='0.0.0.0')

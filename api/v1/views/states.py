@@ -1,0 +1,66 @@
+#!/usr/bin/python3
+"""Handles all RESTful API verbs for class 'State' """
+
+
+from api.v1.views import app_views
+from flask import request, jsonify, abort
+from models import storage, state
+
+
+@app_views.route('/states', methods=['GET'], strict_slashes=False)
+def getAllStates():
+    """Retrieves the list of all State objects"""
+    states = []
+    for state in storage.all("State").values():
+        states.append(state.to_dict())
+
+    return jsonify(states)
+
+
+@app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
+def getSingleState(state_id=None):
+    """Retrieves a State object"""
+    singleState = storage.get("State", state_id)
+    if singleState is None:
+        abort(404)
+    else:
+        return jsonify(singleState.to_dict())
+
+
+@app_views.route('/states/<state_id>', methods=['DELETE'],
+                 strict_slashes=False)
+def deleteState(state_id=None):
+    """Deletes a State object"""
+    singleState = storage.get("State", state_id)
+    if singleState is None:
+        abort(404)
+    else:
+        storage.delete(singleState)
+        storage.save()
+        return jsonify({}), 200
+
+
+@app_views.route('/states', methods=['POST'], strict_slashes=False)
+def postState():
+    """Create a state"""
+    dict = request.get_json()
+    if dict is None:
+        abort(400, "Not a JSON")
+    elif "name" not in dict.keys():
+        abort(400, "Missing name")
+    else:
+        new_state = state.State(**dict)
+        storage.new(new_state)
+        storage.save()
+        return jsonify(new_state.to_dict()), 201
+
+
+@app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
+def putState(state_id=None):
+    """Updates a State object"""
+    dict = request.get_json()
+    if dict is None:
+        abort(400, "Not a JSON")
+    elif "state_id" not in dict.keys():
+        abort(404)
+    else:

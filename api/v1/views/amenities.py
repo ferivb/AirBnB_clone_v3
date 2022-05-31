@@ -2,7 +2,7 @@
 """Handles all RESTful API verbs for class 'Amenities' """
 from flask import abort, request, jsonify
 from api.v1.views import app_views
-from models import storage
+from models import storage, amenity
 from models.amenity import Amenity
 
 
@@ -52,7 +52,7 @@ def postAmenity():
     elif "name" not in dict.keys():
         abort(400, "Missing name")
     else:
-        new_amenity = amenities.Amenity(**dict)
+        new_amenity = amenity.Amenity(**dict)
         storage.new(new_amenity)
         storage.save()
         return jsonify(new_amenity.to_dict()), 201
@@ -60,11 +60,11 @@ def postAmenity():
 
 @app_views.route('/amenities/<amenity_id>', methods=['PUT'],
                  strict_slashes=False)
-def putAmenity(state_id=None):
+def putAmenity(amenity_id):
     """Updates an Amenity object"""
     # Retireve the amenity from storage using amenity_id
     amenity = storage.get(Amenity, amenity_id)
-    if not amenity:
+    if amenity is None:
         abort(404)
     # Parses the incoming JSON request data and returns it as a dict
     dict = request.get_json()

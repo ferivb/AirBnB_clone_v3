@@ -6,6 +6,7 @@ from api.v1.views import app_views
 from flask import request, jsonify, abort, make_response
 from models import storage, State
 
+
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
 def get_all_states():
     """Gets state information for all states"""

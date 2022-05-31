@@ -5,6 +5,7 @@ from api.v1.views import app_views
 from models import storage, place
 from models.place import Place
 from models.city import City
+from models.user import User
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
@@ -56,19 +57,19 @@ def postPlace(city_id):
     dict = request.get_json()
     if dict is None:
         abort(400, "Not a JSON")
+    user_id = storage.get('User', dict['user_id'])
     if 'user_id' not in dict:
         abort(400, 'Missing user_id')
-    user_id = storage.get(User, json.get("user_id"))
     if not user_id:
         abort(404)
-    if not json.get("name"):
+    if "name" not in dict.keys():
         abort(404, 'Missing name')
 
     dict["city_id"] = city_id
-    place = Place(**dict)
-    storage.new(place)
+    new_place = place.Place(**dict)
+    storage.new(new_place)
     storage.save
-    return jsonify(place.to_dict()), 201
+    return jsonify(new_place.to_dict()), 201
 
 
 @app_views.route('/places/<place_id>', methods=['PUT'], strict_slashes=False)

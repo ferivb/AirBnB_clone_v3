@@ -47,6 +47,8 @@ def postCity(state_id):
     """Creates a new City in a given state using the state id"""
     # Retireve the state from storage using state_id
     state = storage.get('State', state_id)
+    if state is None:
+        abort(404)
     # Parses the incoming JSON request data and returns it as a dict
     dict = request.get_json()
     if dict is None:

@@ -12,7 +12,9 @@ from models.user import User
                  strict_slashes=False)
 def getAllPlaces(city_id):
     """Returns a list of all Places"""
-    if city_id is None:
+    # Retireve the city from storage using city_id
+    city = storage.get('City', city_id)
+    if city is None:
         abort(404)
     places = []
     for place in storage.all("Place").values():
@@ -91,4 +93,4 @@ def putPlace(place_id):
                 setattr(place, key, val)
         storage.save()
         updatedPlace = place.to_dict()
-        return jsonify(updatedPlace), 200
+        return make_response(jsonify(updatedPlace), 200)

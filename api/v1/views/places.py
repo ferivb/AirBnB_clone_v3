@@ -68,7 +68,7 @@ def postPlace(city_id):
     place = Place(**dict)
     storage.new(place)
     storage.save
-    return  make_response(jsonify(place.to_dict()), 201)
+    return make_response(jsonify(place.to_dict()), 201)
 
 
 @app_views.route('/places/<place_id>', methods=['PUT'], strict_slashes=False)
@@ -85,7 +85,7 @@ def putPlace(place_id):
         abort(400, "Not a JSON")
     else:
         for key, val in dict.items():
-            if key in ['id', 'user_id', 'city_id', 'created_at', 'updated_at']:
+            if key in ['id', 'created_at', 'updated_at', 'user_id', 'city_id']:
                 pass
             else:
                 setattr(place, key, val)

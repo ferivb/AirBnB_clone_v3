@@ -47,25 +47,28 @@ def deletePlace(place_id):
 
 @app_views.route('/cities/<city_id>/places', methods=['POST'],
                  strict_slashes=False)
-def new_place(city_id):
-    """ Creates a new Place """
-    city = storage.get(City, city_id)
+def postPlace(city_id):
+    """Creates a new Place"""
+    # Retireve the city from storage using city_id
+    city = storage.get('City', city_id)
     if city is None:
         abort(404)
-    new_place = request.get_json()
-    if not new_place:
-        abort(400, 'Not a JSON')
-    if 'user_id' not in new_place:
+    # Parses the incoming JSON request data and returns it as a dict
+    dict = request.get_json()
+    if dict is None:
+        abort(400, "Not a JSON")
+    if 'user_id' not in dict:
         abort(400, 'Missing user_id')
-    if not storage.get(User, new_place['user_id']):
+    if not storage.get(User, dict['user_id']):
         abort(404)
-    if 'name' not in new_place:
-        abort(400, 'Missing name')
-    new_place['city_id'] = city_id
-    place = Place(**new_place)
+    if "name" not in dict.keys():
+        abort(404, 'Missing name')
+
+    dict["city_id"] = city_id
+    place = Place(**dict)
     storage.new(place)
-    storage.save()
-    return make_response(jsonify(place.to_dict()), 201)
+    storage.save
+    return  make_response(jsonify(place.to_dict()), 201)
 
 
 @app_views.route('/places/<place_id>', methods=['PUT'], strict_slashes=False)
@@ -82,7 +85,7 @@ def putPlace(place_id):
         abort(400, "Not a JSON")
     else:
         for key, val in dict.items():
-            if key in ['id', 'created_at', 'updated_at']:
+            if key in ['id', 'user_id', 'city_id', 'created_at', 'updated_at']:
                 pass
             else:
                 setattr(place, key, val)
